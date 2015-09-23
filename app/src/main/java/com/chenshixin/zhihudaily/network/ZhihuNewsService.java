@@ -1,5 +1,8 @@
 package com.chenshixin.zhihudaily.network;
 
+import android.support.annotation.NonNull;
+
+import com.chenshixin.zhihudaily.model.NewsResult;
 import com.chenshixin.zhihudaily.model.StartImage;
 
 import retrofit.Callback;
@@ -20,5 +23,12 @@ public interface ZhihuNewsService {
      */
     @GET("/start-image/{size}")
     void getStartImage(@Path("size") @StartImage.StartImageSize String size, Callback<StartImage> callback);
+
+    @GET("/stories/latest")
+    void latestStories(Callback<NewsResult> callback);
+
+    @GET("stories/before/{date}")
+    void beforeStories(@Path("date") @NonNull String date, Callback<NewsResult> callback);
+
 
 }
