@@ -13,9 +13,9 @@ public class NewsResult {
      */
     private String date;
 
-    private List<Story> stories;
+    private List<StoryItem> stories;
 
-    private List<Story> top_stories;
+    private List<StoryItem> top_stories;
 
     public String getDate() {
         return date;
@@ -25,19 +25,19 @@ public class NewsResult {
         this.date = date;
     }
 
-    public List<Story> getStories() {
+    public List<StoryItem> getStories() {
         return stories;
     }
 
-    public void setStories(List<Story> stories) {
+    public void setStories(List<StoryItem> stories) {
         this.stories = stories;
     }
 
-    public List<Story> getTop_stories() {
+    public List<StoryItem> getTop_stories() {
         return top_stories;
     }
 
-    public void setTop_stories(List<Story> top_stories) {
+    public void setTop_stories(List<StoryItem> top_stories) {
         this.top_stories = top_stories;
     }
 

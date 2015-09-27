@@ -8,7 +8,7 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="AppTheme.NoActionBar">
+    <style name="AppTheme.NoActionBar" parent="AppTheme">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
@@ -16,5 +16,44 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="AppTheme.Text.HeadLINE" parent="android:TextAppearance">
+        <item name="android:textSize">@dimen/text_size_head_line</item>
+        <item name="android:textColor">@color/primaryText</item>
+    </style>
+
+    <style name="AppTheme.Text.Title" parent="android:TextAppearance">
+        <item name="android:textSize">@dimen/text_size_title</item>
+        <item name="android:textColor">@color/primaryText</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="AppTheme.Text.SubHeader" parent="android:TextAppearance">
+        <item name="android:textSize">@dimen/text_size_sub_header</item>
+        <item name="android:textColor">@color/primaryText</item>
+    </style>
+
+    <style name="AppTheme.Text.MenuAndBody2" parent="android:TextAppearance">
+        <item name="android:textSize">@dimen/text_size_menu_and_body2</item>
+        <item name="android:textColor">@color/primaryText</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="AppTheme.Text.Body1" parent="android:TextAppearance">
+        <item name="android:textSize">@dimen/text_size_body1</item>
+        <item name="android:textColor">@color/primaryText</item>
+    </style>
+
+    <style name="AppTheme.Text.Caption" parent="android:TextAppearance">
+        <item name="android:textSize">@dimen/text_size_caption</item>
+        <item name="android:textColor">@color/secondaryText</item>
+    </style>
+
+    <style name="AppTheme.Text.Title.StoryItem.Title" parent="AppTheme.Text.MenuAndBody2">
+        <item name="android:layout_marginStart">@dimen/common_margin</item>
+        <item name="android:layout_marginEnd">@dimen/common_margin</item>
+        <item name="android:layout_marginBottom">@dimen/common_margin</item>
+        <item name="android:gravity">left</item>
+    </style>
 
 </resources>

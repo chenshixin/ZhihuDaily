@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.chenshixin.zhihudaily.model.NewsResult;
 import com.chenshixin.zhihudaily.model.StartImage;
+import com.chenshixin.zhihudaily.model.Story;
 
 import retrofit.Callback;
 import retrofit.http.GET;
@@ -30,5 +31,7 @@ public interface ZhihuNewsService {
     @GET("stories/before/{date}")
     void beforeStories(@Path("date") @NonNull String date, Callback<NewsResult> callback);
 
+    @GET("/story/{id}")
+    void getStory(@Path("id") long id, Callback<Story> callback);
 
 }

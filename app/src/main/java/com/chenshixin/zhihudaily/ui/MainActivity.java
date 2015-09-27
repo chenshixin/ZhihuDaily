@@ -2,12 +2,13 @@ package com.chenshixin.zhihudaily.ui;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -15,64 +16,54 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.chenshixin.zhihudaily.R;
+import com.chenshixin.zhihudaily.adapter.StoryAdapter;
 import com.chenshixin.zhihudaily.model.NewsResult;
 import com.chenshixin.zhihudaily.network.ApiManager;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
+
+    @Bind(R.id.srl_main_news)
+    SwipeRefreshLayout mSwipeRefreshLayout;
+
+    @Bind(R.id.rv_main_news)
+    RecyclerView mNewsRV;
+
+    private StoryAdapter mAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        ApiManager.getService().latestStories(new Callback<NewsResult>() {
-            @Override
-            public void success(NewsResult newsResult, Response response) {
-                Log.d(TAG, newsResult.toString());
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-
-            }
-        });
+        ButterKnife.bind(this);
+        initViews();
+        loadContent();
     }
 
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
+    private void initViews() {
+        initToolbar();
+        initFAB();
+        initSwipeLayout();
+        initNewsRV();
+    }
+
+    private void initNewsRV() {
+        mNewsRV.setHasFixedSize(true);
+        mNewsRV.setLayoutManager(new LinearLayoutManager(this));
+        mAdapter = new StoryAdapter(this);
+        mNewsRV.setAdapter(mAdapter);
+    }
+
+    private void initSwipeLayout() {
+        mSwipeRefreshLayout.setOnRefreshListener(this);
     }
 
     @Override
@@ -84,41 +75,48 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
+    public void onRefresh() {
 
-        if (id == R.id.nav_camara) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+    }
 
-        } else if (id == R.id.nav_slideshow) {
+    private void loadContent() {
+        ApiManager.getService().latestStories(new Callback<NewsResult>() {
+            @Override
+            public void success(NewsResult newsResult, Response response) {
+                Log.d(TAG, newsResult.toString());
+                mAdapter.setStoryData(newsResult.getStories());
+                mAdapter.notifyDataSetChanged();
+            }
 
-        } else if (id == R.id.nav_manage) {
+            @Override
+            public void failure(RetrofitError error) {
 
-        } else if (id == R.id.nav_share) {
+            }
+        });
+    }
 
-        } else if (id == R.id.nav_send) {
+    private Toolbar initToolbar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        return toolbar;
+    }
 
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
+    private void initFAB() {
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
     }
 }
