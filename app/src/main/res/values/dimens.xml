@@ -22,4 +22,6 @@
     <dimen name="story_list_item_height">100dp</dimen>
     <dimen name="story_list_item_margin_bottom">20dp</dimen>
 
+    <dimen name="story_image_height">200dp</dimen>
+
 </resources>

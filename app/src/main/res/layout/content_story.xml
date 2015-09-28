@@ -1,20 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
-              app:layout_behavior="@string/appbar_scrolling_view_behavior"
-              tools:context=".ui.StoryActivity"
-              tools:showIn="@layout/app_bar_main">
-
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context=".ui.StoryActivity">
 
     <ImageView
         android:id="@+id/iv_story_image"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="@dimen/story_image_height"
         android:scaleType="centerCrop"
-        android:transitionName="@string/transition.storyImage"/>
+        android:transitionName="@string/transition.storyImage"
+        tools:ignore="UnusedAttribute"/>
 
-</LinearLayout>
+    <View
+        android:id="@+id/view_story_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/story_image_height"
+        android:alpha="0"
+        android:background="?attr/colorPrimary"/>
+
+    <com.github.ksoichiro.android.observablescrollview.ObservableScrollView
+        android:id="@+id/osv_story_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:overScrollMode="never"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/story_image_height"
+                android:background="@android:color/transparent"/>
+
+            <WebView
+                android:id="@+id/wv_story_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+    </com.github.ksoichiro.android.observablescrollview.ObservableScrollView>
+
+</FrameLayout>
