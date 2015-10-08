@@ -28,7 +28,7 @@ public interface ZhihuNewsService {
     @GET("/stories/latest")
     void latestStories(Callback<NewsResult> callback);
 
-    @GET("stories/before/{date}")
+    @GET("/stories/before/{date}")
     void beforeStories(@Path("date") @NonNull String date, Callback<NewsResult> callback);
 
     @GET("/story/{id}")

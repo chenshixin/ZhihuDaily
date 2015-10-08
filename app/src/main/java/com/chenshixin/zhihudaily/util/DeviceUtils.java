@@ -7,7 +7,7 @@ import android.util.DisplayMetrics;
  * 工具累
  * Created by chenshixin on 15/9/26.
  */
-public class Utils {
+public class DeviceUtils {
 
     private static DisplayMetrics getDisplayMetrics(Activity activity) {
         DisplayMetrics metric = new DisplayMetrics();

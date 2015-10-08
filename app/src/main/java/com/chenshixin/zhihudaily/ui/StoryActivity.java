@@ -21,6 +21,7 @@ import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.chenshixin.zhihudaily.R;
 import com.chenshixin.zhihudaily.model.Story;
 import com.chenshixin.zhihudaily.network.ApiManager;
+import com.chenshixin.zhihudaily.util.StoryUtil;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
@@ -119,14 +120,16 @@ public class StoryActivity extends AppCompatActivity implements ObservableScroll
             @Override
             public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> animation) {
                 super.onResourceReady(resource, animation);
-                scheduleStartPostponedTransition(mStoryIV);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    scheduleStartPostponedTransition(mStoryIV);
+                }
             }
         });
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void scheduleStartPostponedTransition(final View sharedElement) {
         sharedElement.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
             @Override
             public boolean onPreDraw() {
                 sharedElement.getViewTreeObserver().removeOnPreDrawListener(this);
@@ -153,9 +156,8 @@ public class StoryActivity extends AppCompatActivity implements ObservableScroll
 
 
     private void showContent(Story story) {
-        String mNewsContent = "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + story.getCss().get(0) + "\"/>"
-                + story.getBody().replace("<div class=\"img-place-holder\">", "");
-        mWebView.loadDataWithBaseURL("", mNewsContent, "text/html", "UTF-8", null);
+        String mNewsContent = StoryUtil.formatOnlineContent(story.getBody());
+        mWebView.loadDataWithBaseURL("file:///android_asset/", mNewsContent, "text/html", "UTF-8", null);
     }
 
 }

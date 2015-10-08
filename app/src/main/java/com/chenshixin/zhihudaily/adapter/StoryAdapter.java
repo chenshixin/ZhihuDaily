@@ -11,14 +11,19 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.chenshixin.zhihudaily.R;
+import com.chenshixin.zhihudaily.model.Story;
 import com.chenshixin.zhihudaily.model.StoryItem;
+import com.chenshixin.zhihudaily.network.ApiManager;
 import com.chenshixin.zhihudaily.ui.StoryActivity;
-import com.chenshixin.zhihudaily.util.Utils;
+import com.chenshixin.zhihudaily.util.DeviceUtils;
 
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * 新闻列表适配器
@@ -50,12 +55,13 @@ public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         final StoryItem story = mStoryData.get(position);
+        final List<String> imageUrl = story.getImages();
         holder.mTitleTV.setText(story.getTitle());
-        Glide.with(mActivity).load(story.getImages().get(0)).into(holder.mImageIV);
+        Glide.with(mActivity).load(imageUrl.get(0)).into(holder.mImageIV);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                StoryActivity.start(mActivity, story.getId(), holder.mImageIV, story.getImages().get(0));
+                StoryActivity.start(mActivity, story.getId(), holder.mImageIV, imageUrl.get(0));
             }
         });
         runEnterAnimation(holder.itemView, position);
@@ -86,7 +92,7 @@ public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.ViewHolder> 
         }
         if (position > lastAnimatedPosition) {
             lastAnimatedPosition = position;
-            view.setTranslationY(Utils.getScreenHeight(mActivity));
+            view.setTranslationY(DeviceUtils.getScreenHeight(mActivity));
             view.animate()
                     .translationY(0)
                     .setStartDelay(100 * position)

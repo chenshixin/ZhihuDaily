@@ -3,8 +3,6 @@ package com.chenshixin.zhihudaily.ui;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,8 +15,13 @@ import android.view.View;
 
 import com.chenshixin.zhihudaily.R;
 import com.chenshixin.zhihudaily.adapter.StoryAdapter;
+import com.chenshixin.zhihudaily.listener.OnRecyclerViewScrollListener;
 import com.chenshixin.zhihudaily.model.NewsResult;
+import com.chenshixin.zhihudaily.model.StoryItem;
 import com.chenshixin.zhihudaily.network.ApiManager;
+import com.chenshixin.zhihudaily.util.DateUtil;
+
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -38,6 +41,13 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     private StoryAdapter mAdapter;
 
+    /**
+     * 最新数据的日期，格式为"20151008"
+     */
+    private String lastDate;
+
+    private List<StoryItem> mStoryItems;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,14 +66,21 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     }
 
     private void initNewsRV() {
+        mAdapter = new StoryAdapter(this);
+        mAdapter.setStoryData(mStoryItems);
         mNewsRV.setHasFixedSize(true);
         mNewsRV.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new StoryAdapter(this);
         mNewsRV.setAdapter(mAdapter);
     }
 
     private void initSwipeLayout() {
         mSwipeRefreshLayout.setOnRefreshListener(this);
+        mNewsRV.addOnScrollListener(new OnRecyclerViewScrollListener() {
+            @Override
+            public void onBottom() {
+                loadMore();
+            }
+        });
     }
 
     @Override
@@ -84,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     @Override
     public void onRefresh() {
-
+        loadContent();
     }
 
     private void loadContent() {
@@ -92,7 +109,28 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             @Override
             public void success(NewsResult newsResult, Response response) {
                 Log.d(TAG, newsResult.toString());
-                mAdapter.setStoryData(newsResult.getStories());
+                mStoryItems = newsResult.getStories();
+                mAdapter.setStoryData(mStoryItems);
+                mAdapter.notifyDataSetChanged();
+                lastDate = newsResult.getDate();
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+
+            }
+        });
+    }
+
+
+    private void loadMore() {
+        lastDate = DateUtil.getBeforeDate(lastDate);
+        ApiManager.getService().beforeStories(lastDate, new Callback<NewsResult>() {
+            @Override
+            public void success(NewsResult newsResult, Response response) {
+                mStoryItems.addAll(newsResult.getStories());
+                mAdapter.setStoryData(mStoryItems);
                 mAdapter.notifyDataSetChanged();
             }
 
