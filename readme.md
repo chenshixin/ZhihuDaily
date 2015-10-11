@@ -19,7 +19,7 @@
 - **[stetho:1.2.0][6]**
 
 ## 截屏
-- [截屏][7]
+- [7]
 
 ## 关于我
 - [个人站点][8]
@@ -27,6 +27,7 @@
 
 ## License
 Copyright 2014 chenshixin
+
 Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
@@ -44,5 +45,5 @@ limitations under the License.
 [4]: http://jakewharton.github.io/butterknife/
 [5]: https://github.com/ksoichiro/Android-ObservableScrollView
 [6]: http://facebook.github.io/stetho/
-[7]: https://github.com/chenshixin/ZhihuDaily/blob/master/screenshots/screenshots.gif
+[7]: https://github.com/chenshixin/ZhihuDaily/blob/master/screenshot/screenshots.gif
 [8]: http://www.chenshixin.com
