@@ -5,4 +5,5 @@ package com.chenshixin.zhihudaily.db;
  * Created by chenshixin on 15/10/1.
  */
 public class BasicTable {
+
 }

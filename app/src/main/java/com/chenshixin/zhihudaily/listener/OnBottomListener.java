@@ -8,4 +8,6 @@ public interface OnBottomListener {
 
     void onBottom();
 
+    void onPositionChanged(int firstVisibleItemPosition);
+
 }

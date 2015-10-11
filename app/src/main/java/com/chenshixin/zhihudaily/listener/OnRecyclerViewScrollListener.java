@@ -35,6 +35,11 @@ public abstract class OnRecyclerViewScrollListener extends RecyclerView.OnScroll
      */
     private int lastVisibleItemPosition;
 
+    /**
+     * 第一个可见的item的位置
+     */
+    private int firstVisibleItemPosition;
+
     @Override
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
         super.onScrolled(recyclerView, dx, dy);
@@ -57,10 +62,14 @@ public abstract class OnRecyclerViewScrollListener extends RecyclerView.OnScroll
             case LINEAR:
                 lastVisibleItemPosition = ((LinearLayoutManager) layoutManager)
                         .findLastVisibleItemPosition();
+                firstVisibleItemPosition = ((LinearLayoutManager) layoutManager)
+                        .findFirstVisibleItemPosition();
                 break;
             case GRID:
                 lastVisibleItemPosition = ((GridLayoutManager) layoutManager)
                         .findLastVisibleItemPosition();
+                firstVisibleItemPosition = ((GridLayoutManager) layoutManager)
+                        .findFirstVisibleItemPosition();
                 break;
             case STAGGERED_GRID:
                 StaggeredGridLayoutManager staggeredGridLayoutManager
@@ -70,6 +79,7 @@ public abstract class OnRecyclerViewScrollListener extends RecyclerView.OnScroll
                 }
                 staggeredGridLayoutManager.findLastVisibleItemPositions(lastPositions);
                 lastVisibleItemPosition = findMax(lastPositions);
+                firstVisibleItemPosition = findMin(lastPositions);
                 break;
         }
 
@@ -86,6 +96,7 @@ public abstract class OnRecyclerViewScrollListener extends RecyclerView.OnScroll
             Log.d(TAG, "is loading more");
             onBottom();
         }
+        onPositionChanged(firstVisibleItemPosition);
     }
 
     private int findMax(int[] lastPositions) {
@@ -97,4 +108,15 @@ public abstract class OnRecyclerViewScrollListener extends RecyclerView.OnScroll
         }
         return max;
     }
+
+    private int findMin(int[] lastPositions) {
+        int min = lastPositions[0];
+        for (int value : lastPositions) {
+            if (value < min) {
+                min = value;
+            }
+        }
+        return min;
+    }
+
 }

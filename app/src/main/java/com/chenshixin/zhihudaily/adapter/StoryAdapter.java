@@ -11,11 +11,14 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.chenshixin.zhihudaily.R;
+import com.chenshixin.zhihudaily.db.StoryTable;
+import com.chenshixin.zhihudaily.db.ZhihuDbHelper;
 import com.chenshixin.zhihudaily.model.Story;
 import com.chenshixin.zhihudaily.model.StoryItem;
 import com.chenshixin.zhihudaily.network.ApiManager;
 import com.chenshixin.zhihudaily.ui.StoryActivity;
 import com.chenshixin.zhihudaily.util.DeviceUtils;
+import com.chenshixin.zhihudaily.util.StoryUtil;
 
 import java.util.List;
 
@@ -37,6 +40,8 @@ public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.ViewHolder> 
 
     private int lastAnimatedPosition = 0;
 
+    private StoryTable mStoryTable;
+
     public StoryAdapter(Activity activity) {
         mActivity = activity;
     }
@@ -44,6 +49,10 @@ public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.ViewHolder> 
     public StoryAdapter setStoryData(List<StoryItem> storyData) {
         mStoryData = storyData;
         return this;
+    }
+
+    public void setDBHelper(ZhihuDbHelper dbHelper) {
+        mStoryTable = new StoryTable(dbHelper);
     }
 
     @Override
@@ -54,17 +63,41 @@ public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        final StoryItem story = mStoryData.get(position);
-        final List<String> imageUrl = story.getImages();
-        holder.mTitleTV.setText(story.getTitle());
+        final StoryItem storyItem = mStoryData.get(position);
+        final List<String> imageUrl = storyItem.getImages();
+        holder.mTitleTV.setText(storyItem.getTitle());
         Glide.with(mActivity).load(imageUrl.get(0)).into(holder.mImageIV);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                StoryActivity.start(mActivity, story.getId(), holder.mImageIV, imageUrl.get(0));
+                StoryActivity.start(mActivity, storyItem.getId(), holder.mImageIV, imageUrl.get(0));
             }
         });
         runEnterAnimation(holder.itemView, position);
+        ApiManager.getService().getStory(storyItem.getId(), new Callback<Story>() {
+            @Override
+            public void success(final Story story, Response response) {
+                String onlineContent = StoryUtil.formatOnlineContent(story.getBody());
+                story.setBody(onlineContent);
+                story.setDate(storyItem.getDate());
+                if (mStoryTable.queryStoryById(story.getId()) == null) {
+                    mStoryTable.insert(story);
+
+                }
+                Glide.with(mActivity).load(story.getImage()).crossFade(1000).into(holder.mImageIV);
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        StoryActivity.start(mActivity, story.getId(), holder.mImageIV, story.getImage());
+                    }
+                });
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+
+            }
+        });
     }
 
     @Override

@@ -19,6 +19,8 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.chenshixin.zhihudaily.R;
+import com.chenshixin.zhihudaily.ZhihuDailyApp;
+import com.chenshixin.zhihudaily.db.StoryTable;
 import com.chenshixin.zhihudaily.model.Story;
 import com.chenshixin.zhihudaily.network.ApiManager;
 import com.chenshixin.zhihudaily.util.StoryUtil;
@@ -32,7 +34,6 @@ import butterknife.ButterKnife;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
-
 
 public class StoryActivity extends AppCompatActivity implements ObservableScrollViewCallbacks {
 
@@ -62,13 +63,20 @@ public class StoryActivity extends AppCompatActivity implements ObservableScroll
 
     private int mImageHeight;
 
+    private StoryTable mStoryTable;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_story);
         ButterKnife.bind(this);
         initViews();
+        initZhihuDbHelper();
         initData();
+    }
+
+    private void initZhihuDbHelper() {
+        mStoryTable = new StoryTable(((ZhihuDailyApp) getApplication()).getDbHelper());
     }
 
     @Override
@@ -141,17 +149,22 @@ public class StoryActivity extends AppCompatActivity implements ObservableScroll
 
     private void loadContent() {
         long id = getIntent().getLongExtra(EXTRA_ID, -1);
-        ApiManager.getService().getStory(id, new Callback<Story>() {
-            @Override
-            public void success(Story story, Response response) {
-                showContent(story);
-            }
+        Story story = mStoryTable.queryStoryById(id);
+        if (story == null) {
+            ApiManager.getService().getStory(id, new Callback<Story>() {
+                @Override
+                public void success(Story story, Response response) {
+                    showContent(story);
+                }
 
-            @Override
-            public void failure(RetrofitError error) {
+                @Override
+                public void failure(RetrofitError error) {
 
-            }
-        });
+                }
+            });
+        } else {
+            showContent(story);
+        }
     }
 
 

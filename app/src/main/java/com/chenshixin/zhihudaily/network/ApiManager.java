@@ -18,9 +18,9 @@ public class ApiManager {
 
     public static final int TIMEOUT = 10;
 
-    private static final String API_URL = "http://news-at.zhihu.com/api/4";
+    public static final String API_URL = "http://news-at.zhihu.com/api/4";
 
-    final static Gson sGson =
+    public final static Gson sGson =
             new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").serializeNulls().create();
 
     private static ZhihuNewsService sZhihuNewsService;

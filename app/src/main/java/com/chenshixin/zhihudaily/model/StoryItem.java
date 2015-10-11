@@ -1,5 +1,6 @@
 package com.chenshixin.zhihudaily.model;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -25,6 +26,8 @@ public class StoryItem {
      * 是否包含多图
      */
     private Boolean multipic;
+
+    private String date;
 
     public List<String> getImages() {
         return images;
@@ -72,6 +75,14 @@ public class StoryItem {
 
     public void setMultipic(Boolean multipic) {
         this.multipic = multipic;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 
     @Override

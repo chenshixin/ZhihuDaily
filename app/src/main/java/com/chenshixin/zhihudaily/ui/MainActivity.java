@@ -1,8 +1,6 @@
 package com.chenshixin.zhihudaily.ui;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,9 +9,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.chenshixin.zhihudaily.R;
+import com.chenshixin.zhihudaily.ZhihuDailyApp;
 import com.chenshixin.zhihudaily.adapter.StoryAdapter;
 import com.chenshixin.zhihudaily.listener.OnRecyclerViewScrollListener;
 import com.chenshixin.zhihudaily.model.NewsResult;
@@ -60,7 +58,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     private void initViews() {
         initToolbar();
-        initFAB();
         initSwipeLayout();
         initNewsRV();
     }
@@ -68,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private void initNewsRV() {
         mAdapter = new StoryAdapter(this);
         mAdapter.setStoryData(mStoryItems);
+        mAdapter.setDBHelper(((ZhihuDailyApp) getApplication()).getDbHelper());
         mNewsRV.setHasFixedSize(true);
         mNewsRV.setLayoutManager(new LinearLayoutManager(this));
         mNewsRV.setAdapter(mAdapter);
@@ -79,6 +77,11 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             @Override
             public void onBottom() {
                 loadMore();
+            }
+
+            @Override
+            public void onPositionChanged(int firstVisibleItemPosition) {
+                setTitle(DateUtil.getMainTitleBarDate(mStoryItems.get(firstVisibleItemPosition).getDate()));
             }
         });
     }
@@ -92,10 +95,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -109,10 +108,14 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             @Override
             public void success(NewsResult newsResult, Response response) {
                 Log.d(TAG, newsResult.toString());
-                mStoryItems = newsResult.getStories();
+                lastDate = newsResult.getDate();
+                List<StoryItem> storyItems = newsResult.getStories();
+                for (StoryItem storyItem : storyItems) {
+                    storyItem.setDate(lastDate);
+                }
+                mStoryItems = storyItems;
                 mAdapter.setStoryData(mStoryItems);
                 mAdapter.notifyDataSetChanged();
-                lastDate = newsResult.getDate();
                 mSwipeRefreshLayout.setRefreshing(false);
             }
 
@@ -129,7 +132,11 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         ApiManager.getService().beforeStories(lastDate, new Callback<NewsResult>() {
             @Override
             public void success(NewsResult newsResult, Response response) {
-                mStoryItems.addAll(newsResult.getStories());
+                List<StoryItem> storyItems = newsResult.getStories();
+                for (StoryItem storyItem : storyItems) {
+                    storyItem.setDate(lastDate);
+                }
+                mStoryItems.addAll(storyItems);
                 mAdapter.setStoryData(mStoryItems);
                 mAdapter.notifyDataSetChanged();
             }
@@ -138,6 +145,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             public void failure(RetrofitError error) {
 
             }
+
         });
     }
 
@@ -147,14 +155,4 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         return toolbar;
     }
 
-    private void initFAB() {
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-    }
 }
