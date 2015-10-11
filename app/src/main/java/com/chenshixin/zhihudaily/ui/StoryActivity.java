@@ -124,6 +124,7 @@ public class StoryActivity extends AppCompatActivity implements ObservableScroll
             postponeEnterTransition();
         }
         String imageUrl = getIntent().getStringExtra(EXTRA_IMAGE_URL);
+        //大图加载完毕后使用进入动画
         Glide.with(StoryActivity.this).load(imageUrl).into(new GlideDrawableImageViewTarget(mStoryIV) {
             @Override
             public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> animation) {
